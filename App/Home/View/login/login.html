@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<title>欢迎登入 | Mr.Tool 后台</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="format-detection" content="telephone=no">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<script src="__PUBLIC__/AmazeUI-2.5.2/assets/js/jquery.min.js"></script>
+<script src="__PUBLIC__/AmazeUI-2.5.2/assets/js/amazeui.min.js"></script>
+<script src="__PUBLIC__/AmazeUI-2.5.2/assets/js/app.js"></script>
+  
+<link rel="icon" type="image/png" href="__PUBLIC__/Pic/back/logo2.png">
+<link rel="stylesheet" href="__PUBLIC__/AmazeUI-2.5.2/assets/css/amazeui.min.css"/>
+<style>
+.header {
+  text-align: center;
+}
+.header h1 {
+  font-size: 200%;
+  color: #333;
+  margin-top: 30px;
+}
+.header p {
+  font-size: 14px;
+}
+.backA{
+	max-widht:1600px;
+	margin:0px auto;
+	background:url('__PUBLIC__/Pic/back/1245160.jpg') round;
+	cursor:default;
+}
+.backB{
+	padding:20px 0px;
+	background:rgba(255,255,255,.3);
+}
+.backC{
+	background:rgba(0,0,0,.5);
+}
+</style>
+<script type="text/javascript">	
+function doAlert(word, fn){
+	if(fn != undefined){
+		$('#am-doFunction').click(fn);
+	}
+	$('#am-alertWord').html(word);
+	$('#my-alert').modal({relatedTarget: this,});
+}
+</script>
+</head>
+<body class="backA">
+<div>
+	<div class="header backC">
+	  <div class="am-g">
+		<h1 style="color:#fff">米斯特工具 · 系统 </h1>
+		<img src="__PUBLIC__/Pic/back/logo5.png" /> <font style="vertical-align:sub ;color:#fff">Mr.Table 后台</font>
+		<br>
+		<br>
+	  </div>
+	</div>
+	<div class="am-g backB">
+	  <div class="am-u-lg-6 am-u-md-8 am-u-sm-centered">
+		<h3>请输入账号进行登入</h3>
+		<form action="<{:U('Login/doLogin')}>" method="post" class="am-form">
+		  <label for="password">账号:</label>
+		  <input type="password" class="" name="account" id="password" value="<?php echo $account ?>">
+		  <?='<font style="color:red;">'.$error.'</font>'?> <br>
+		  <label for="remember-me">
+			<input id="remember_me" name="remember_me" <?php if($account) echo 'checked'; ?> type="checkbox">
+			记住账号
+		  </label>
+		  <br />
+		  <div class="am-cf">
+			<input type="submit" name="" value="登 录" class="am-btn am-btn-primary am-btn-sm am-fl">
+			<a href="javascript:;" onclick="doAlert('找你家老大改密码 (╰_╯)#');" class="am-btn am-btn-success am-btn-sm am-fr">忘记账号 ^_^? </a>
+		  </div>
+		</form>
+	  </div>
+	</div>
+	
+	<!--提示框-->
+	<div class="am-modal am-modal-alert" tabindex="-1" id="my-alert">
+		<div class="am-modal-dialog">
+			<div class="am-modal-hd" id="am-alertWord"></div>
+			<div class="am-modal-footer">
+			  <span class="am-modal-btn" id="am-doFunction">好哒~</span>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

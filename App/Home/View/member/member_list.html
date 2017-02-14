@@ -1,0 +1,227 @@
+<block name="header"><include file="Part:header" /></block>
+<!-- content start -->
+<style type="text/css">
+	th{text-align:center;}
+	.inputA{float:left;clear:both;margin-bottom:10px;}
+</style>
+
+  <!-- content start -->
+<div class="admin-content" style="cursor:default;">
+
+	<div class="am-cf am-padding">
+	  <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">人员安排</strong></div>
+	</div>
+
+	<div class="am-g">
+	  <div class="am-u-sm-12 am-u-md-6">
+		<div class="am-btn-toolbar">
+		  <div class="am-btn-group am-btn-group-xs">
+			<button type="button" onclick="editMember('add');" class="am-btn am-btn-success am-round"><span class="am-icon-plus"></span> 添加员工</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+	<div class="am-g">
+		<div class="am-u-sm-12">
+		  <table style="text-align:center;" class="am-table am-table-striped am-table-hover table-main">
+			<thead>
+			  <tr>
+				<th style="text-align:center;" class="table-check"></th>
+				<th class="table-id" style="width:5%">职位</th>
+				<th class="table-title" style="width:20%">名称</th>
+				<th class="table-set" style="text-align:left;">操作</th>
+			  </tr>
+		  </thead>
+		  <tbody>
+			<?php if(!empty($members)): ?>
+			<?php foreach($members as $val): ?>
+			<tr member_id="<?php echo $val['id'] ?>">
+			  <td></td>
+			  <td><font style="color: #0e90d2;"><?php echo $val['job_str'] ?></font></td>
+			  <td class="am-hide-sm-only"><?php echo $val['name'] ?></td>
+			  <td>
+				<div class="am-btn-toolbar">
+				  <div <?php   echo  'member_id="'.$val['id'].'" name="'.$val['name'].'" job="'.$val['job'].'"' ?> class="am-btn-group am-btn-group-xs">
+					<button onclick="editMember(this);return false;" class="am-btn am-btn-default am-btn-xs am-text-secondary"><span class="am-icon-pencil-square-o"></span> 编辑</button>
+					<button onclick="delMember('<?php echo $val['id'] ?>');return false;" class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"><span class="am-icon-trash-o"></span> 删除</button>
+				  </div>
+				</div>
+			  </td>
+			</tr>
+			<?php endforeach; ?>
+			<?php endif; ?>
+		  </tbody>
+		</table>
+		
+		
+		<br>
+		
+		<!--分页
+		<div class="am-cf">
+			共 15 条记录
+			<div class="am-fr">
+				<ul class="am-pagination">
+				  <li class="am-disabled"><a href="#">?</a></li>
+				  <li class="am-active"><a href="#">1</a></li>
+				  <li><a href="#">2</a></li>
+				  <li><a href="#">3</a></li>
+				  <li><a href="#">4</a></li>
+				  <li><a href="#">5</a></li>
+				  <li><a href="#">?</a></li>
+				</ul>
+			</div>
+		</div>
+		-->
+		
+		
+		</div>
+	</div>
+	
+</div>
+<!-- content end -->
+
+
+<div class="am-modal am-modal-confirm" tabindex="-1" id="my-confirm">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd" id="editMemberName" >编辑员工</div>
+    <div class="am-modal-bd" style="overflow:hidden;margin:0 auto;width:400px;;">
+    
+	
+	<span style="float:left;clear:both;margin:20px 0px;">职位：
+		<a onclick="selectOneJob(this);return false;" job="0" class="choose_job am-btn am-round am-btn-default "> 超级</a>
+		<a onclick="selectOneJob(this);return false;" id="default_job" job="1" class="choose_job am-btn am-round am-btn-success "> 管理<span class="am-icon-check-square-o"></span></a>
+		<a onclick="selectOneJob(this);return false;" job="2" class="choose_job am-btn am-round am-btn-default "> 厨房</a>
+	</span>
+	<span class="inputA">名称：<input type="text" value="" id="member_name" name="name" /></span>
+	<span class="inputA">账号：<input placeholder="不修改可不输入" type="password" value="" id="account" name="account" /></span>
+	<span class="inputA">重复：<input placeholder="请再次输入账号" type="password" value="" id="reaccount" name="reaccount" /></span>
+	<input type="hidden" value="" id="form_member_id" />
+	
+    </div>
+    <div class="am-modal-footer">
+      <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+      <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+    </div>
+  </div>
+</div>
+
+<div class="am-modal am-modal-confirm" tabindex="-1" id="realyToDel">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd" id="editTableName" >确认删除该员工？</div>
+	<input type="hidden" id="del_member_id" value="" />
+    <div class="am-modal-footer">
+      <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+      <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+    </div>
+  </div>
+</div>
+
+<block name="footer"><include file="Part:footer" /></block>
+
+<script type="text/javascript">
+
+// 编辑或新增员工
+function editMember(obj){
+
+	if(obj === 'add'){
+		// 新增餐桌
+		$('#form_member_id').val('add');
+		$('#editMemberName').html('新增桌位');
+		$('#member_name').val('');
+		selectOneJob($('#default_job'));
+	}else{
+		// 编辑餐桌
+		$('#form_member_id').val($(obj).parent().attr('member_id'));
+		$('#member_name').val($(obj).parent().attr('name'));
+		
+		// 选中一个职位
+		var job_id = $(obj).parent().attr('job');
+		var selectObj = $('.choose_job[job="'+job_id+'"]');
+		selectOneJob(selectObj);
+	}
+	
+	// 发送更新信息
+	$('#my-confirm').modal({
+		relatedTarget: this,
+		onConfirm: function(options) {
+			var account = $('#account').val();
+			var reaccount = $('#reaccount').val();
+			var name = $('#member_name').val();
+			var job = $('.choose_job[class*="am-btn-success"]').attr('job');
+			var member_id = $('#form_member_id').val();
+			var url = '<{:U("Member/editMember")}>'+'?member_id='+member_id+'&job='+job+'&account='+account+'&reaccount='+reaccount+'&name='+name;
+			$.ajax({
+				url: url,
+				type:'get',
+				dataType:'json',
+				success:function(data){
+					doAlert(data.msg, function(){
+						if(data.ok){
+							window.location.reload();
+						}
+					})
+				},
+			});
+        },
+        onCancel: function() {}
+    });
+	
+}
+
+function selectOneJob(obj){
+	$('.choose_job[class*="am-btn-success"]').removeClass('am-btn-success').addClass('am-btn-default');
+	$('.choose_job>span').removeClass();
+	
+	$(obj).removeClass('am-btn-default').addClass('am-btn-success');
+	var job_str = $(obj).html();
+	$(obj).html(job_str+'<span class="am-icon-check-square-o"></span>');
+	
+}
+
+// 删除员工
+function delMember(member_id){
+	
+	$('#del_member_id').val(member_id);
+	$('#realyToDel').modal({
+		relatedTarget: this,
+		onConfirm: function(options) {
+			var url = '<{:U("Member/delMember")}>?member_id='+$('#del_member_id').val();
+			$.ajax({
+				url: url,
+				type:'get',
+				dataType:'json',
+				success:function(data){
+					if(data.ok){
+						doAlert(data.msg, function (){
+							$('tr[member_id='+member_id+']').fadeOut('show', function(){
+								$(this).remove();
+							});
+						});
+					}else{
+						doAlert(data.msg);
+					}
+				},
+			});
+        },
+        onCancel: function() {}
+    });
+	
+}
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
