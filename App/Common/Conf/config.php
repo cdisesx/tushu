@@ -1,7 +1,7 @@
 <?php
 
 
-switch ( 'master' ) {
+switch ( 'local' ) {
 	
 	case  "local" :
 		return array(
