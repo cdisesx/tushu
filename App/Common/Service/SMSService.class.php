@@ -166,7 +166,7 @@ class SMSService{
             $send_time = getArrayVelue($code_info, 'send_time', '');
             $is_today = ( date('Y-m-d') == substr($send_time,0,10) ) ? true : false;
 
-            $time = 30;
+            $time = 10;
             if($is_today && $num >= $time){
                 return ['code' => -1,'msg'=> '每天只能发送'.$time.'次短信，请明天再来'];
             }
