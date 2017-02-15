@@ -82,14 +82,12 @@ class SMSService{
             'ParamString' => '{"code":"' . $code . '"}'
         );
 
-        $params['Signature'] = 1;
-//            $this->computeSignature($params);
+        $params['Signature'] = $this->computeSignature($params);
         $url_params = http_build_query($params);
 
         $centent = 'https://sms.aliyuncs.com/?'.$url_params;
         $result = $this->curl_get($centent);
         $result = json_decode($result,true);
-        p($result);exit;
         if(!$result || getArrayVelue($result, 'Code') || getArrayVelue($result, 'Message')){
             return false;
         }else{
@@ -168,7 +166,7 @@ class SMSService{
             $send_time = getArrayVelue($code_info, 'send_time', '');
             $is_today = ( date('Y-m-d') == substr($send_time,0,10) ) ? true : false;
 
-            $time = 3;
+            $time = 30;
             if($is_today && $num >= $time){
                 return ['code' => -1,'msg'=> '每天只能发送'.$time.'次短信，请明天再来'];
             }
