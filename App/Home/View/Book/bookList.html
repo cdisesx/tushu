@@ -56,6 +56,8 @@
 	
 	<if condition="($params['id'] gt 0) OR ($params['book_name']) "> 
 	<a href='{{:U("Book/bookList")}}' class="am-topbar-btn am-btn am-fr am-btn-sm am-btn-warning " ><span class="am-icon-home"></span></a>
+	<else />
+	<a href='{{:U("Book/bookList")}}' class="am-topbar-btn am-btn am-fr am-btn-sm am-btn-warning " ><span class="am-icon-refresh"></span></a>
 	</if>
 	
 
@@ -230,7 +232,12 @@
 </div>
 
 <script type="text/javascript">
-	
+	var mc = {
+			book_id:0,
+			book_name:'',
+			check_borrowed:0,
+			do_type:'',
+		};
 	// 滚动到顶端
 	$('#my-button').on('click', function() {
 	  var $w = $(window);
@@ -239,6 +246,9 @@
 	
 	// 借阅
 	function borrow_book(name,id){
+		mc.book_id = id;
+		mc.book_name = name;
+		mc.do_type = 'borrow';
 		$('#borrow-book-name').html(name);
 		$('#my-borrow').modal({
 			relatedTarget: this,
@@ -247,7 +257,7 @@
 				if(checkInput('borrow')){
 					var url = '{{:U("Book/borrowBook")}}';
 					var push_data = $('#borrow_form').serialize();
-					push_data += '&id='+id;
+					push_data += '&id='+id+'&cb=0';
 					$.ajax({
 						url: url,
 						data:push_data,
@@ -276,7 +286,11 @@
 	}
 	// 归还
 	function return_book(name,id){
-	$('#return-book-name').html(name);
+		mc.book_id = id;
+		mc.book_name = name;
+		mc.check_borrowed = 1;
+		mc.do_type = 'return';
+		$('#return-book-name').html(name);
 		$('#my-return').modal({
 			relatedTarget: this,
 			closeOnConfirm:false,
@@ -284,7 +298,7 @@
 				if(checkInput('return')){
 					var url = '{{:U("book/returnBook")}}';
 					var push_data = $('#return_form').serialize();
-					push_data += '&id='+id;
+					push_data += '&id='+id+'&cb=1';
 					$.ajax({
 						url: url,
 						data:push_data,
@@ -312,6 +326,10 @@
 	}
 	// 报失
 	function lose_book(name,id){
+		mc.book_id = id;
+		mc.book_name = name;
+		mc.check_borrowed = 2;
+		mc.do_type = 'lose';
 		$('#lose-book-name').html(name);
 		$('#my-lose').modal({
 			relatedTarget: this,
@@ -320,7 +338,7 @@
 				if(checkInput('lose')){
 					var url = '{{:U("book/loseBook")}}';
 					var push_data = $('#lose_form').serialize();
-					push_data += '&id='+id;
+					push_data += '&id='+id+'&cb=2';
 					$.ajax({
 						url:url,
 						data:push_data,
@@ -432,7 +450,7 @@
 		
 		return true;
 	}
-	// 验证恢复
+	// 报错恢复
 	$('input').on('change click focus',function(){
 		$(this).parent('div').removeClass('am-form-error');
 	});
@@ -461,7 +479,7 @@
 	
 	// 手机号码检测
 	function checkIsPhone(phone){
-		var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+		var myreg = /^1[34578]{1}\d{9}$/; 
 		if(myreg.test(phone)){ 
 			return true;
 		} 
@@ -469,10 +487,11 @@
 	}
 	
 	
-	// 验证码
+	// 短信验证码
 	var clock = '';
 	var nums = 60;
 	var btn;
+	var lock_code = false;
 	$('.btn-loading-example').click(function () {
 	
 		if(nums==60){
@@ -487,9 +506,13 @@
 			showError($(thisBtn).parent('.checkForm').find('input[name="phone"]'));
 			return false;
 		}
+		if(lock_code){
+			return false;
+		}
+		lock_code = true;
 		$.ajax({
 			url:'{{:U("book/sendCode")}}',
-			data:'phone='+phone,
+			data:'phone='+phone+'&book_id='+mc.book_id+'&cb='+mc.check_borrowed,
 			type:'post',
 			dataType:'json',
 			beforeSend:function (){
@@ -498,13 +521,22 @@
 			success:function(data){
 				if(data.code==0){
 					beginCount();
-				}else{
+				}
+				else if(data.code<=0){
+					eval("$('#my-"+mc.do_type+"').modal('close')");
+					doAlert(data.msg, function(){
+						$(btn).html('获取');
+						eval(mc.do_type+'_book("'+mc.book_name+'",'+mc.book_id+')');
+					})
+				}
+				else{
 					$(btn).html('reTry');
 				}
-				
+				lock_code = false;
 			},
 			error:function (){
 				$(btn).html('reTry');
+				lock_code = false;
 			}
 		});
 	}

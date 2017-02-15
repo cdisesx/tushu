@@ -2,6 +2,7 @@
 namespace Home\Controller;
 
 use Common\Model\BookModel;
+use Common\Model\CodeModel;
 use Common\Service\BookService;
 use Common\Service\SMSService;
 use Think\Controller;
@@ -47,20 +48,19 @@ class BookController extends Controller {
         $this->display('bookListModel');
     }
 
-
-    /**
-     * 验证码验证
-     */
-    public function codeCheck(){
-
-    }
     /**
      * 生成并发送验证码
      */
     public function sendCode(){
-        $phone = spost('phone');
+
+        $params = [
+            'phone' => spost('phone'),
+            'book_id' => spost('book_id'),
+            'cb' => spost('cb')
+        ];
+
         $SMS = new SMSService();
-        json_output($SMS->sendCodeSMS($phone));
+        json_output($SMS->sendCodeSMS($params));
     }
 
     /**

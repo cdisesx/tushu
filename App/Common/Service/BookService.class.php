@@ -24,6 +24,12 @@ class BookService {
             return ['code'=>1,'msg'=>$error];
         }
 
+        // 短信验证码认证
+        $SMS = new SMSService();
+        if(!$SMS->codeCheck()){
+            return ['code'=>1,'msg'=>'验证码错误，请重新输入'];
+        }
+
         // 获取借阅人id
         $UM = new UserModel();
         $user_data = [
@@ -101,6 +107,12 @@ class BookService {
             return ['code'=>1,'msg'=>$error];
         }
 
+        // 短信验证码认证
+        $SMS = new SMSService();
+        if(!$SMS->codeCheck()){
+            return ['code'=>1,'msg'=>'验证码错误，请重新输入'];
+        }
+
         // 检测该手机是否借过本书
         $BM = New BookModel();
         $book_info = $BM->checkHasBorrowed($data);
@@ -160,6 +172,12 @@ class BookService {
         // 数据检测
         if($error = $this->checkReturn($data)){
             return ['code'=>1,'msg'=>$error];
+        }
+
+        // 短信验证码认证
+        $SMS = new SMSService();
+        if(!$SMS->codeCheck()){
+            return ['code'=>1,'msg'=>'验证码错误，请重新输入'];
         }
 
         // 检测该手机是否借过本书
