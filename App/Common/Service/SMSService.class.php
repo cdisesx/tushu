@@ -212,11 +212,12 @@ class SMSService{
         $search_data = [
             'phone'=>spost('phone'),
             'code'=>spost('code'),
-            'send_time'=>['gt',  date("Y-m-d",time()-60)],
-            'cb'=>spost('cb')
+            'type'=>spost('cb'),
+            'send_time'=>['gt',  date("Y-m-d H:i:s",time()-60)]
         ];
 
-        if(!$CM->where($search_data)->find()){
+        $code = $CM->where($search_data)->find();
+        if(!$code){
             return false;
         }
 
