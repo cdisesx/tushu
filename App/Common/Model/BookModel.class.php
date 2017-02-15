@@ -30,9 +30,10 @@ class BookModel extends Model{
 			$where['b.id'] = $book_id;
 		}
 		// 搜索
-		$book_name = getArrayVelue($params,'book_name');
-		if($book_name){
-			$where['b.name'] = ['LIKE','%'.$book_name.'%'];
+		$key_word = trim(addslashes(getArrayVelue($params,'key_word')));
+		if($key_word){
+			$where_str = ' ( b.name like \'%'.$key_word.'%\' or u.phone = \''.$key_word.'\' )';
+			//$where['b.name'] = ['LIKE','%'.$key_word.'%'];
 		}
 
 		$field = [
@@ -45,9 +46,10 @@ class BookModel extends Model{
 			->alias('b')
 			->field($field)
 			->join('left join `user` as u on u.id = b.user_id')
-			->where($where)
+			->where($where)->where($where_str)
 			->page($page.','.$size)
-			->order('b.status asc')
+			//->order('b.status asc')
+			->order('b.id desc')
 			->select();
 
 //		echo $this->getLastSql();

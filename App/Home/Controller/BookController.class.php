@@ -18,15 +18,15 @@ class BookController extends Controller {
         $is_ajax = sget('is_ajax');
         $params = [
             'id'=>sget('id'),
-            'book_name'=>sget('book_name'),
+            'key_word'=>sget('key_word'),
             'page'=>sget('page',1),
             'size'=>sget('size',3),
         ];
 
         // 获取数据
-        $bookModel = new BookModel();
-        $list = $bookModel->getList($params);
         if($is_ajax){
+            $bookModel = new BookModel();
+            $list = $bookModel->getList($params);
             $this->getBookHtmlList($list);
             return;
         }
@@ -35,7 +35,7 @@ class BookController extends Controller {
         if($params['id']>0){
             $this->assign('id',$params['id']);
         }
-        $this->assign('list',$list);
+
         $this->assign('params',$params);
         $this->display();
     }

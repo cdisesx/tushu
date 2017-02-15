@@ -54,7 +54,7 @@
 	
     <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-search"></span></button>
 	
-	<if condition="($params['id'] gt 0) OR ($params['book_name']) "> 
+	<if condition="($params['id'] gt 0) OR ($params['key_word']) "> 
 	<a href='{{:U("Book/bookList")}}' class="am-topbar-btn am-btn am-fr am-btn-sm am-btn-warning " ><span class="am-icon-home"></span></a>
 	<else />
 	<a href='{{:U("Book/bookList")}}' class="am-topbar-btn am-btn am-fr am-btn-sm am-btn-warning " ><span class="am-icon-refresh"></span></a>
@@ -66,7 +66,12 @@
         <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
             <li>
 				<form action="{{:U('Book/bookList')}}" method="get" class="am-form">
-					<input id="search_text" name="book_name" type="text" value="{{$params['book_name']}}" />
+					<div class="am-form-group am-form-error am-form-icon am-form-feedback">
+						<input id="search_text" placeholder="书名 或 手机号" name="key_word" type="text" value="{{$params['key_word']}}" />
+						<span style="color: rgba(101, 90, 90, 0.92);top:7px;right:68px;padding:10px;" class="am-icon-close" id="clear_search"></span>
+					</div>
+					
+					<input id="book_id" type="hidden" value="{{$params['id']}}" />
 					<button style="width:19%;" type="submit" class="am-btn am-btn-danger search_text_btn">搜索</button>
 				</form>
 			</li>
@@ -83,51 +88,7 @@
 
       <hr>
       <ul class="am-avg-sm-1 am-avg-md-4 am-panel-group am-avg-lg-6 am-margin gallery-list" id="accordion">
-		<volist name="list" id="vo">
-			<li>
-				<div class="am-panel am-panel-default">
-					<div class="am-panel-hd">
-					  <div class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-{{$vo.id}}'}">
-						<img class="am-img-thumbnail am-img-bdrs" src="__PIC__{{$vo.pic}}" alt=""/>
-						
-						<p class="margin-A">
-							<switch name="vo.status" >
-								<case value="1">
-									<span class="am-badge am-badge-success am-radius font-A">在架</span>
-								</case>
-								<case value="2">
-									<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了</span>
-								</case>
-								<case value="3">
-									<span class="am-badge am-badge-danger am-radius font-A">丢失</span>
-								</case>
-							</switch>
-							{{$vo.name}}
-						</p>
-					  </div>
-					</div>
-					<div id="do-not-say-{{$vo.id}}" class="am-panel-collapse am-collapse">
-						<switch name="vo.status" >
-							<case value="1">
-								<button type="button" onclick="borrow_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-warning am-btn-block am-btn-sm">点击借阅《{{$vo.name|sub_string=10}}》</button>
-							</case>
-							<case value="2">
-								<button type="button" onclick="return_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-success am-btn-block am-btn-sm">我要还书</button>
-								<button type="button" onclick="lose_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-danger am-btn-block am-btn-sm" style="margin-top:0px;">我要挂失</button>
-							</case>
-							<case value="3">
-								<button type="button" onclick="return_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-success am-btn-block am-btn-sm">我要还书</button>
-							</case>
-						</switch>
-						
-						
-						<div class="am-panel-bd">
-							{{$vo.introduction}}
-						</div>
-					</div>
-				</div>
-			</li>
-		</volist>
+		
       </ul>
 	  
 
@@ -563,7 +524,7 @@
 	});
 	
 	// 到达底部操作
-	var page = 1;
+	var page = 0;
 	$(".admin-content").scroll(function(){
 		var totalHeight = $(this).height();
         var nScrollHight = $(this)[0].scrollHeight;
@@ -571,7 +532,7 @@
 　　　　var paddingBottom = parseInt( $(this).css('padding-bottom') )
 		var paddingTop = parseInt( $(this).css('padding-top') );
         if(nScrollTop + paddingBottom + paddingTop + totalHeight >= nScrollHight - 20){
-			if(page<=20){
+			if(page>=0){
 				getNextPage();
 			}else{
 				$('#nextPage').html('已经没有了');
@@ -580,30 +541,65 @@
 		}
     });
 	// 获取下一页
+	var loading_page = false;
 	function getNextPage(){
+		if(loading_page){
+			return ;
+		}
 		++page;
+		var search_text = $('#search_text').val();
+		var book_id = $('#book_id').val();
 		$.ajax({
 			url:'{{:U("book/bookList")}}',
-			data:'is_ajax=1&page='+page,
+			data:'is_ajax=1&page='+page+'&key_word='+search_text+'&id='+book_id,
 			type:'get',
 			dataType:'html',
 			beforeSend:function (){
 				$('#nextPage').show();
+				loading_page = true;
 			},
 			success:function(html){
+				loading_page = false;
 				if(html){
 					$('#accordion').append(html);
 					$('#nextPage').hide();
 				}else{
-					page = 20;
-					$('#nextPage').html('已经没有了');
+					if(page>1){
+						$('#nextPage').html('已经没有了');
+					}else{
+						$('#nextPage').html('');
+					}
+					page = -1;
 				}
 			},
 			error:function (){
+				loading_page = false;
 				$('#nextPage').hide();
 			}
 		});
 	}
+	getNextPage();
+	
+	
+	$('#search_text').on('change keyup', function (){
+		is_clear_search();
+	});
+	function is_clear_search(){
+		var search_word = $('#search_text').val();
+		if(search_word){
+			$('#clear_search').show();
+		}else{
+			$('#clear_search').hide();
+		}
+	};
+	is_clear_search();
+	
+	// 搜索框双击点中全选
+	$('#clear_search').click(function (){
+		$('#search_text').val('');
+		$('#clear_search').hide();
+	});
+	
 </script>
 
 
