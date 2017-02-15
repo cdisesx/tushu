@@ -82,7 +82,7 @@ class SMSService{
             'ParamString' => '{"code":"' . $code . '"}'
         );
 
-        $params['Signature'] = $this->computeSignature($params);
+        $params['Signature'] =  $this->computeSignature($params);
         $url_params = http_build_query($params);
 
         $centent = 'https://sms.aliyuncs.com/?'.$url_params;
