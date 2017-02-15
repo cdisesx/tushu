@@ -32,8 +32,7 @@ class BookModel extends Model{
 		// 搜索
 		$key_word = trim(addslashes(getArrayVelue($params,'key_word')));
 		if($key_word){
-			$where_str = ' ( b.name like \'%'.$key_word.'%\' or u.phone = \''.$key_word.'\' )';
-			//$where['b.name'] = ['LIKE','%'.$key_word.'%'];
+			$where_str = ' ( b.key_word like \'%'.$key_word.'%\' or u.phone = \''.$key_word.'\' )';
 		}
 
 		$field = [
