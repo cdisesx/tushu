@@ -22,17 +22,17 @@ class BookModel extends Model{
 
 		$page = getArrayVelue($params, 'page', 1);
 		$size = getArrayVelue($params, 'size', 20);
-		$where = [];
+		$where_str = '1';
 
 		// id搜素
 		$book_id = getArrayVelue($params,'id', -1);
 		if($book_id>0){
-			$where['b.id'] = $book_id;
+			$where_str .= ' and b.id = '.intval($book_id);
 		}
 		// 搜索
 		$key_word = trim(addslashes(getArrayVelue($params,'key_word')));
 		if($key_word){
-			$where_str = ' ( b.key_word like \'%'.$key_word.'%\' or u.phone = \''.$key_word.'\' )';
+			$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' or u.phone = \''.$key_word.'\' )';
 		}
 
 		$field = [
@@ -45,7 +45,7 @@ class BookModel extends Model{
 			->alias('b')
 			->field($field)
 			->join('left join `user` as u on u.id = b.user_id')
-			->where($where)->where($where_str)
+			->where($where_str)
 			->page($page.','.$size)
 			//->order('b.status asc')
 			->order('b.status asc,b.id desc')
