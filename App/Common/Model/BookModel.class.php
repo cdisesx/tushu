@@ -48,7 +48,7 @@ class BookModel extends Model{
 			->where($where)->where($where_str)
 			->page($page.','.$size)
 			//->order('b.status asc')
-			->order('b.id desc')
+			->order('b.status asc,b.id desc')
 			->select();
 
 //		echo $this->getLastSql();
