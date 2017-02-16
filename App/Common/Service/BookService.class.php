@@ -38,15 +38,10 @@ class BookService {
         ];
         $user_id = $UM->saveAndGetId($user_data);
 
-        // 判断书籍是否被借阅
-        $BM = New BookModel();
-        $search_book_data = [
-            'id'=>$data['book_id'],
-            'status'=>['GT',1]
-        ];
-        $is_borrowd = $BM->where($search_book_data)->find();
-        if($is_borrowd){
-            return ['code'=>0,'msg'=>'该书籍已被借阅'];
+        // 判断书籍是否被借阅获取其他异常状态
+        $can_borrowed = $this->checkBorrowBookInfo($data['book_id']);
+        if($can_borrowed !== true){
+            return $can_borrowed;
         }
 
         // 事物啓動
@@ -59,6 +54,7 @@ class BookService {
             'user_id'=>$user_id,
             'borrow_time'=>$time_now
         ];
+        $BM = New BookModel();
         $save_book = $BM->where(['id'=>$data['book_id']])->save($book_data);
 
         // 保持記錄
@@ -72,8 +68,6 @@ class BookService {
         $save_history = $HM->add($history_data);
 
         if($save_book && $save_history){
-//            M()->rollback();
-//            return ['code'=>1,'msg'=>'借阅失败'];
             M()->commit();
             return ['code'=>0,'msg'=>'借阅成功'];
         }else{
@@ -83,7 +77,31 @@ class BookService {
     }
 
     /**
-     * 检测借阅书籍信息
+     * 借阅书籍 检测书籍信息
+     */
+    public function checkBorrowBookInfo($book_id){
+        $BM = New BookModel();
+        $book_info = $BM->where(['id'=>$book_id])->find();
+
+        if($book_info){
+            $status = getArrayVelue($book_info, 'status');
+
+            if($status == 2){
+                return ['code'=>0,'msg'=>'该书籍已被借阅'];
+            }
+
+            if($status == 3){
+                return ['code'=>0,'msg'=>'该书籍已丢失'];
+            }
+        }else{
+            return ['code'=>0,'msg'=>'不存在该书籍'];
+        }
+
+        return true;
+    }
+
+    /**
+     * 借阅书籍 检测传参信息
      */
     public function checkBorrow($data){
 
