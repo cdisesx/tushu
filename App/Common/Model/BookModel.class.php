@@ -53,6 +53,15 @@ class BookModel extends Model{
 
 //		echo $this->getLastSql();
 
+		// 数据处理
+		if(count($result)){
+			$time_now = time();
+			foreach($result as $key=>$val){
+				$result[$key]['use_days'] = intval( ($time_now - strtotime($val['borrow_time'])) / 86400 );
+				$result[$key]['use_days'] .= '天';
+			}
+		}
+		
 		return $result;
 	}
 
