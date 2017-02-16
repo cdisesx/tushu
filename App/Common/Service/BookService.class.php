@@ -141,8 +141,18 @@ class BookService {
         // 事物啓動
         M()->startTrans();
 
-        // 修改book表状态
+        // 保持記錄
         $time_now = date('Y-m-d H:i:s');
+        $HM = new HistoryModel();
+        $history_data = [
+            'book_id'=>$data['book_id'],
+            'user_id'=>getArrayVelue($book_info, 'user_id'),
+            'do_type'=>2,
+            'do_time'=>$time_now
+        ];
+        $save_history = $HM->add($history_data);
+
+        // 修改book表状态
         $book_data = [
             'status'=>1,
             'user_id'=>0,
@@ -150,19 +160,7 @@ class BookService {
         ];
         $save_book = $BM->where(['id'=>$data['book_id']])->save($book_data);
 
-        // 保持記錄
-        $HM = new HistoryModel();
-        $history_data = [
-            'book_id'=>$data['book_id'],
-            'user_id'=>getArrayVelue($book_info['user_id']),
-            'do_type'=>2,
-            'do_time'=>$time_now
-        ];
-        $save_history = $HM->add($history_data);
-
         if($save_book && $save_history){
-//            M()->rollback();
-//            return ['code'=>1,'msg'=>'借阅失败'];
             M()->commit();
             return ['code'=>0,'msg'=>'还书成功'];
         }else{
@@ -208,23 +206,23 @@ class BookService {
         // 事物啓動
         M()->startTrans();
 
-        // 修改book表状态
+        // 保持記錄
         $time_now = date('Y-m-d H:i:s');
+        $HM = new HistoryModel();
+        $history_data = [
+            'book_id'=>$data['book_id'],
+            'user_id'=>getArrayVelue($book_info, 'user_id'),
+            'do_type'=>3,
+            'do_time'=>$time_now
+        ];
+        $save_history = $HM->add($history_data);
+
+        // 修改book表状态
         $book_data = [
             'status'=>3,
             'return_time'=>$time_now
         ];
         $save_book = $BM->where(['id'=>$data['book_id']])->save($book_data);
-
-        // 保持記錄
-        $HM = new HistoryModel();
-        $history_data = [
-            'book_id'=>$data['book_id'],
-            'user_id'=>getArrayVelue($book_info['user_id']),
-            'do_type'=>3,
-            'do_time'=>$time_now
-        ];
-        $save_history = $HM->add($history_data);
 
         if($save_book && $save_history){
 //            M()->rollback();
