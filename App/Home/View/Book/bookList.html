@@ -334,7 +334,7 @@
 					if(data.code>0){
 						borrow_book(name,id);
 					}else{
-						window.location.href='{{:U("book/booklist")}}?id='+id;
+						window.location.href='{{:U("Book/bookList")}}?id='+id;
 					}
 				})
 				break;
@@ -343,7 +343,7 @@
 					if(data.code>0){
 						return_book(name,id);
 					}else{
-						window.location.href='{{:U("book/booklist")}}?id='+id;
+						window.location.href='{{:U("Book/bookList")}}?id='+id;
 					}
 				})
 				break;
@@ -352,7 +352,7 @@
 					if(data.code>0){
 						lose_book(name,id);
 					}else{
-						window.location.href='{{:U("book/booklist")}}?id='+id;
+						window.location.href='{{:U("Book/bookList")}}?id='+id;
 					}
 				})
 				break;
