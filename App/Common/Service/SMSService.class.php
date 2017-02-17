@@ -66,7 +66,7 @@ class SMSService{
 
         $params = array (
             // 公共参数
-            'SignName' => '小小副短信',
+            'SignName' => '小副提示',
             'Format' => 'JSON',
             'Version' => '2016-09-27',
             'AccessKeyId' => $this->AccessKeyID,
