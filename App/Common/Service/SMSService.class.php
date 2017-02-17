@@ -77,7 +77,7 @@ class SMSService{
 
             // 接口参数
             'Action' => 'SingleSendSms',
-            'TemplateCode' => 'SMS_46745097',
+            'TemplateCode' => 'SMS_47235071',
             'RecNum' => $phone,
             'ParamString' => '{"code":"' . $code . '"}'
         );
