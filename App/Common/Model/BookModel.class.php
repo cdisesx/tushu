@@ -47,7 +47,6 @@ class BookModel extends Model{
 			->join('left join `user` as u on u.id = b.user_id')
 			->where($where_str)
 			->page($page.','.$size)
-			//->order('b.status asc')
 			->order('b.status asc,b.id desc')
 			->select();
 
