@@ -69,16 +69,8 @@
 
     <div class="am-collapse am-topbar-collapse" style="padding:3px 10px;" id="topbar-collapse">
 
-
-		<div class="am-topbar-brand am-show-md-only">
-			<strong style="color:#ff0000;">本系统暂不支持宽屏浏览器使用，请通过手机端访问或将浏览器宽度调至640像素！</strong>
-		</div>
-		<div class="am-topbar-brand am-show-lg-only">
-			<strong style="color:#ff0000;">本系统暂不支持宽屏浏览器使用，请通过手机端访问或将浏览器宽度调至640像素！</strong>
-		</div>
-
         <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
-            <li>
+			<li>
 				<form action="{{:U('Book/bookList')}}" method="get" class="am-form">
 					<div class="am-form-group am-form-error am-form-icon am-form-feedback">
 						<input id="search_text" placeholder="书名 或 手机号" name="key_word" type="text" value="{{$params['key_word']}}" />
@@ -99,6 +91,13 @@
   <div class="admin-content">
 
     <div class="admin-content-body">
+
+		<div  class="am-show-md-only">
+			<hr><strong style="color:#ff0000;">本系统暂不支持宽屏浏览器使用，请通过手机端访问或将浏览器宽度调至640像素！</strong>
+		</div>
+		<div  class="am-show-lg-only">
+			<hr><strong style="color:#ff0000;">本系统暂不支持宽屏浏览器使用，请通过手机端访问或将浏览器宽度调至640像素！</strong>
+		</div>
 
       <hr>
       <ul class="am-avg-sm-1 am-avg-md-2 am-panel-group am-avg-lg-6 am-margin gallery-list" id="accordion">
