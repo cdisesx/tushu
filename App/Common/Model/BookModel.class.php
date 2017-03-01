@@ -1,6 +1,7 @@
 <?php
 
 namespace Common\Model;
+use Common\Service\SMSService;
 use Think\Model;
 
 class BookModel extends Model{
@@ -32,7 +33,12 @@ class BookModel extends Model{
 		// 搜索
 		$key_word = trim(addslashes(getArrayVelue($params,'key_word')));
 		if($key_word){
-			$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' or u.phone = \''.$key_word.'\' )';
+			$SMSS = new SMSService();
+			if($SMSS->checkIsPhone($key_word)){
+				$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' or (u.phone = \''.$key_word.'\' and b.status in (2,3) ) )';
+			}else{
+				$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' )';
+			}
 		}
 
 		$field = [
