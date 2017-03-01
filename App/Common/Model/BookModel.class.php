@@ -33,10 +33,10 @@ class BookModel extends Model{
 		// 搜索
 		$key_word = trim(addslashes(getArrayVelue($params,'key_word')));
 		if($key_word){
-			if($key_word === '###已借'){
+			if($key_word === 'xxx已借'){
 				$where_str .= ' and b.status = 2';
 			}
-			elseif($key_word === '###丢失'){
+			elseif($key_word === 'xxx丢失'){
 				$where_str .= ' and b.status = 3';
 			}else{
 				$SMSS = new SMSService();
