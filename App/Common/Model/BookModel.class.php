@@ -33,11 +33,18 @@ class BookModel extends Model{
 		// 搜索
 		$key_word = trim(addslashes(getArrayVelue($params,'key_word')));
 		if($key_word){
-			$SMSS = new SMSService();
-			if($SMSS->checkIsPhone($key_word)){
-				$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' or (u.phone = \''.$key_word.'\' and b.status in (2,3) ) )';
+			if($key_word === '###已借'){
+				$where_str .= ' and u.status = 2';
+			}
+			elseif($key_word === '###丢失'){
+				$where_str .= ' and u.status = 3';
 			}else{
-				$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' )';
+				$SMSS = new SMSService();
+				if($SMSS->checkIsPhone($key_word)){
+					$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' or (u.phone = \''.$key_word.'\' and b.status in (2,3) ) )';
+				}else{
+					$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' )';
+				}
 			}
 		}
 
