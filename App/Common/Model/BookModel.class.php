@@ -34,7 +34,7 @@ class BookModel extends Model{
 		$key_word = trim(addslashes(getArrayVelue($params,'key_word')));
 		if($key_word){
 			if($key_word === 'xxx已借'){
-				$where_str .= ' and b.status = 2';
+				$where_str .= ' and b.status in ( 2, 4 ) ';
 			}
 			elseif($key_word === 'xxx丢失'){
 				$where_str .= ' and b.status = 3';

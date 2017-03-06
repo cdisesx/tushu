@@ -9,6 +9,7 @@ namespace Common\Service;
 
 use Common\Model\BookModel;
 use Common\Model\CodeModel;
+use Common\Model\UserModel;
 
 class SMSService{
 
@@ -32,10 +33,26 @@ class SMSService{
         $phone = getArrayVelue($params, 'phone');
         $cb = getArrayVelue($params, 'cb');
 
+        // 还书检测
         if($cb > 0){
             $BM = new BookModel();
             if(!$BM->checkHasBorrowed($params)){
-                return ['code'=>-1,'msg'=>'借用该书籍的手机号码与你填写的不相符，请重新输入'];
+                return ['code'=>1,'msg'=>'借用该书籍的手机号码与你填写的不相符，请重新输入'];
+            }
+        }
+
+        // 借阅检测
+        if($cb == 0){
+            // 获取user_id
+            $UM = new UserModel();
+            $user_info = $UM->where(['phone'=>$phone])->find();
+            $user_id = getArrayVelue($user_info, 'id', -1);
+            if($user_id > 0){
+                $BS = new BookService();
+                $check_book = $BS->checkBorrowBookInfo(getArrayVelue($params,'book_id', -1),$user_id);
+                if(true !== $check_book){
+                    return $check_book;
+                }
             }
         }
 
@@ -53,7 +70,7 @@ class SMSService{
 
         // 发送短信
         if( getArrayVelue($save_result, 'code') == 0 && !$this->aliyunSMS($phone,$code) ){
-            return ['code' => 1,'msg'=> '发送失败，请稍后重试'];
+            return ['code' => 2,'msg'=> '阿里云太坑，发送失败，请稍后重试'];
         }
 
         return $save_result;
@@ -168,7 +185,7 @@ class SMSService{
 
             $time = 10;
             if($is_today && $num >= $time){
-                return ['code' => -1,'msg'=> '每天只能发送'.$time.'次短信，请明天再来'];
+                return ['code' => 3,'msg'=> '每天只能发送'.$time.'次短信，请明天再来'];
             }
 
             // 添加发送短信次数

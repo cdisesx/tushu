@@ -100,10 +100,10 @@ class BookService {
                 $where = ['book_id'=>$book_id,'do_type'=>2,'user_id'=>$user_id];
                 $history_info = $HM->where($where)->order('do_time desc')->find();
                 $return_time = date('Y-m-d', strtotime(getArrayVelue($history_info, 'do_time')));
-
                 if($return_time == date('Y-m-d')){
-                    return ['code'=>0,'msg'=>'无法借阅你当日所归还书籍，请明天再来。'];
+                    return ['code'=>1,'msg'=>'无法借阅你当日所归还书籍，请明天再来。'];
                 }
+
             }
         }else{
             return ['code'=>0,'msg'=>'不存在该书籍'];

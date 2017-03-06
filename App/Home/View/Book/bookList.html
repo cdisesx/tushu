@@ -583,7 +583,7 @@
 				if(data.code==0){
 					beginCount();
 				}
-				else if(data.code<=0){
+				else if(data.code>0){
 					eval("$('#my-"+mc.do_type+"').modal('close')");
 					doAlert(data.msg, function(){
 						$(btn).html('获取');
