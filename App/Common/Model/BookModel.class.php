@@ -70,7 +70,7 @@ class BookModel extends Model{
 			$time_now = time();
 			foreach($result as $key=>$val){
 				$user_days = intval( ($time_now - strtotime($val['borrow_time'])) / 86400 );
-				if($val['status'] == 1 && $user_days >= 20){
+				if($val['status'] == 2 && $user_days >= 20){
 					$result[$key]['status'] = 10;  // 可续借
 				}
 				if($val['status'] == 4){
