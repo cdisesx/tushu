@@ -52,9 +52,9 @@ class SMSService{
         $save_result = $this->saveCode($params);
 
         // 发送短信
-//        if( getArrayVelue($save_result, 'code') == 0 && !$this->aliyunSMS($phone,$code) ){
-//            return ['code' => 1,'msg'=> '发送失败，请稍后重试'];
-//        }
+        if( getArrayVelue($save_result, 'code') == 0 && !$this->aliyunSMS($phone,$code) ){
+            return ['code' => 1,'msg'=> '发送失败，请稍后重试'];
+        }
 
         return $save_result;
     }
