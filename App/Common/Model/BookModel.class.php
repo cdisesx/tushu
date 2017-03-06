@@ -77,9 +77,11 @@ class BookModel extends Model{
 					$result[$key]['use_days'] = $user_days.'天';
 				}
 
-				if($val['status'] == 4){
+				if($val['status'] == 4 || $val['status'] == 3){
 					$due_date = date('Y-m-d', strtotime($val['borrow_time'])+(86400*60));
+					$user_days = intval( ($time_now - strtotime($val['borrow_time'])) / 86400 );
 					$result[$key]['due_date'] = $due_date;
+					$result[$key]['use_days'] = $user_days.'天';
 					if($due_date < date('Y-m-d')){
 						$result[$key]['fine'] = intval((time()-strtotime($val['borrow_time']))/86400-60);
 					}

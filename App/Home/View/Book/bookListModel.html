@@ -18,7 +18,11 @@
 							<span class="am-badge am-badge-secondary am-radius font-A">可续借</span>
 						</case>
 						<case value="3">
+							<if condition=" 0 lt $vo.fine ">
+								<span class="am-badge am-badge-danger am-radius font-A">逾期罚金 {{$vo.fine}}元</span>
+							</if>
 							<span class="am-badge am-badge-danger am-radius font-A">丢失</span>
+							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}</span>
 						</case>
 						<case value="4">
 
