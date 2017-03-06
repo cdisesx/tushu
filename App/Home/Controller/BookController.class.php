@@ -109,4 +109,20 @@ class BookController extends Controller {
         $BS = new BookService();
         json_output($BS->loseBook($data));
     }
+
+
+    /**
+     * 续借
+     */
+    public function renewBook(){
+        // 获取信息
+        $data = [
+            'book_id'=>spost('id'),
+            'phone'=>spost('phone')
+        ];
+
+        // 保存数据
+        $BS = new BookService();
+        json_output($BS->renewBook($data));
+    }
 }

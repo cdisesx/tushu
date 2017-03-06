@@ -60,7 +60,7 @@ class BookModel extends Model{
 			->join('left join `user` as u on u.id = b.user_id')
 			->where($where_str)
 			->page($page.','.$size)
-			->order('b.status asc,b.id desc')
+			->order('b.status asc,b.borrow_time asc,b.id desc')
 			->select();
 
 //		echo $this->getLastSql();
@@ -69,8 +69,19 @@ class BookModel extends Model{
 		if(count($result)){
 			$time_now = time();
 			foreach($result as $key=>$val){
-				$result[$key]['use_days'] = intval( ($time_now - strtotime($val['borrow_time'])) / 86400 );
-				$result[$key]['use_days'] .= '天';
+				$user_days = intval( ($time_now - strtotime($val['borrow_time'])) / 86400 );
+				if($val['status'] == 1 && $user_days >= 20){
+					$result[$key]['status'] = 10;  // 可续借
+				}
+				if($val['status'] == 4){
+					$due_date = date('Y-m-d', strtotime($val['borrow_time'])+(86400*60));
+					$result[$key]['due_date'] = $due_date;
+					if($due_date < date('Y-m-d')){
+						$result[$key]['fine'] = intval((time()-strtotime($val['borrow_time']))/86400-60);
+					}
+				}
+
+				$result[$key]['use_days'] = $user_days.'天';
 			}
 		}
 		

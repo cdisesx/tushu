@@ -124,7 +124,7 @@
   <div class="am-modal-dialog">
     <div class="am-modal-hd">确认借阅</div>
     <div class="am-modal-bd am-g">
-		《<font id="borrow-book-name"></font>》 <hr>
+		《<span id="borrow-book-name"></span>》 <hr>
 		<form class="checkForm" id="borrow_form">
 		<!--am-form-error-->
 		<div class="">
@@ -153,7 +153,7 @@
   <div class="am-modal-dialog">
     <div class="am-modal-hd">确认还书</div>
     <div class="am-modal-bd am-g">
-		《<font id="return-book-name"></font>》 <hr>
+		《<span id="return-book-name"></span>》 <hr>
 		<form class="checkForm" id="return_form">
 		
 		<div class="">
@@ -178,7 +178,7 @@
   <div class="am-modal-dialog">
     <div class="am-modal-hd">上报丢失</div>
     <div class="am-modal-bd am-g">
-		《<font id="lose-book-name"></font>》 <hr>
+		《<span id="lose-book-name"></span>》 <hr>
 		<form class="checkForm" id="lose_form">
 		
 		<div class="">
@@ -197,6 +197,31 @@
       <span class="am-modal-btn" data-am-modal-confirm>确定</span>
     </div>
   </div>
+</div>
+
+<div class="am-modal am-modal-confirm" tabindex="-1" id="my-renew">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">确认续借</div>
+		<div class="am-modal-bd am-g">
+			《<span id="renew-book-name"></span>》 <hr>
+			<form class="checkForm" id="renew_form">
+
+				<div class="">
+					<input name="phone" type="text" class="margin-B am-form-field" placeholder="请输入手机号码">
+				</div>
+
+				<div class=" am-u-sm-8" style="padding-left:0px;">
+					<input name="code" type="text" class="am-form-field" style="margin-top:5px;" placeholder="验证码" />
+				</div>
+
+				<a class="btn-loading-example am-u-sm-4 am-btn" style="margin-top:5px;" >获取</a>
+			</form>
+		</div>
+		<div class="am-modal-footer">
+			<span class="am-modal-btn" data-am-modal-cancel>取消</span>
+			<span class="am-modal-btn" data-am-modal-confirm>确定</span>
+		</div>
+	</div>
 </div>
 
 <div class="am-modal am-modal-confirm" tabindex="-1" id="my-loading">
@@ -338,6 +363,46 @@
 			onCancel: function() {}
 		});
 	}
+	// 续借
+	function renew_book(name,id){
+		mc.book_id = id;
+		mc.book_name = name;
+		mc.check_borrowed = 3;
+		mc.do_type = 'renew';
+		$('#renew-book-name').html(name);
+		$('#my-renew').modal({
+			relatedTarget: this,
+			closeOnConfirm:false,
+			onConfirm: function(options){
+				if(checkInput('renew')){
+					var url = '{{:U("book/renewBook")}}';
+					var push_data = $('#renew_form').serialize();
+					push_data += '&id='+id+'&cb=3';
+					$.ajax({
+						url:url,
+						data:push_data,
+						type:'post',
+						dataType:'json',
+						beforeSend:function (){
+							$('#my-renew').modal('close');
+							$('#my-loading').modal({
+								relatedTarget: this,
+								closeViaDimmer: 0
+							});
+						},
+						success:function(data){
+							loadAlert('renew',data,name,id);
+						},
+						error:function (){
+							$('#my-loading').modal('close');
+							doAlert('网络错误');
+						}
+					});
+				}
+			},
+			onCancel: function() {}
+		});
+	}
 	// 关闭Comfirm并开启alert 当alert执行难后，重新开启Comfirm
 	function loadAlert(action,data,name,id){	
 		$('#my-loading').modal('close');
@@ -364,6 +429,15 @@
 				doAlert(data.msg, function(){
 					if(data.code>0){
 						lose_book(name,id);
+					}else{
+						window.location.href='{{:U("Book/bookList")}}?id='+id;
+					}
+				})
+				break;
+			case 'renew':
+				doAlert(data.msg, function(){
+					if(data.code>0){
+						renew_book(name,id);
 					}else{
 						window.location.href='{{:U("Book/bookList")}}?id='+id;
 					}
@@ -421,6 +495,19 @@
 			}
 			
 		}
+
+		if('renew'===checkForm){
+
+			var obj = $('#renew_form').find('input[name="phone"]');
+			if(!checkIsPhone(obj.val())){
+				showError(obj);return false;
+			}
+			var obj = $('#renew_form').find('input[name="code"]');
+			if(!obj.val()){
+				showError(obj);return false;
+			}
+
+		}
 		
 		return true;
 	}
@@ -474,7 +561,7 @@
 		
 	});
 	function sendCode(thisBtn){
-		btn = thisBtn;
+		btn = $('.btn-loading-example');
 		var phone = $(thisBtn).parent('.checkForm').find('input[name="phone"]').val();
 		if(!checkIsPhone(phone)){
 			showError($(thisBtn).parent('.checkForm').find('input[name="phone"]'));

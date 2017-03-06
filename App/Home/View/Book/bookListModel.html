@@ -13,30 +13,54 @@
 						<case value="2">
 							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}</span>
 						</case>
+						<case value="10">
+							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}</span>
+							<span class="am-badge am-badge-secondary am-radius font-A">可续借</span>
+						</case>
 						<case value="3">
 							<span class="am-badge am-badge-danger am-radius font-A">丢失</span>
 						</case>
+						<case value="4">
+
+							<if condition=" 0 lt $vo.fine ">
+								<span class="am-badge am-badge-danger am-radius font-A">逾期罚金 {{$vo.fine}}元</span>
+							</if>
+							<br>
+							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}</span>
+							<span class="am-badge am-badge-secondary am-radius font-A">续借到期日 {{$vo.due_date}}</span>
+							<br>
+
+						</case>
 					</switch>
-					<font class="font-B">{{$vo.name}}</font>
+					<span class="font-B">{{$vo.name}}</span>
 				</p>
 			  </div>
 			</div>
-			<div id="do-not-say-{{$vo.id}}" class="am-panel-collapse am-collapse">
+			<div id="do-not-say-{{$vo.id}}" class="am-panel-collapse am-collapse am-g">
 				<switch name="vo.status" >
 					<case value="1">
 						<button type="button" onclick="borrow_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-warning am-btn-block am-btn-sm">点击借阅《{{$vo.name|sub_string=10}}》</button>
 					</case>
 					<case value="2">
 						<button type="button" onclick="return_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-success am-btn-block am-btn-sm">我要还书</button>
-						<button type="button" onclick="lose_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-danger am-btn-block am-btn-sm" style="margin-top:0px;">我要挂失</button>
+						<button type="button" onclick="lose_book('{{$vo.name}}',{{$vo.id}});" class="am-btn-block am-btn am-btn-danger am-btn-sm" style="margin-top:0px;">我要挂失</button>
+					</case>
+					<case value="10">
+						<button type="button" onclick="return_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-success am-btn-block am-btn-sm">我要还书</button>
+						<button type="button" onclick="lose_book('{{$vo.name}}',{{$vo.id}});" class="am-u-sm-6 am-u-md-6 am-u-lg-6 am-btn am-btn-danger am-btn-sm" style="margin-top:0px;">我要挂失</button>
+						<button type="button" onclick="renew_book('{{$vo.name}}',{{$vo.id}});" class="am-u-sm-6 am-u-md-6 am-u-lg-6 am-btn am-btn-secondary am-btn-sm" style="margin-top:0px;">我要续借</button>
 					</case>
 					<case value="3">
 						<button type="button" onclick="return_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-success am-btn-block am-btn-sm">我要还书</button>
 					</case>
+					<case value="4">
+						<button type="button" onclick="return_book('{{$vo.name}}',{{$vo.id}});" class="am-btn am-btn-success am-btn-block am-btn-sm">我要还书</button>
+						<button type="button" onclick="lose_book('{{$vo.name}}',{{$vo.id}});" class="am-btn-block am-btn am-btn-danger am-btn-sm" style="margin-top:0px;">我要挂失</button>
+					</case>
 				</switch>
 				
 				
-				<div class="am-panel-bd">
+				<div class="am-panel-bd" style="overflow: hidden;" >
 					{{$vo.introduction}}
 				</div>
 			</div>
