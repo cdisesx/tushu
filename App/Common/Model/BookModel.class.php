@@ -69,10 +69,14 @@ class BookModel extends Model{
 		if(count($result)){
 			$time_now = time();
 			foreach($result as $key=>$val){
-				$user_days = intval( ($time_now - strtotime($val['borrow_time'])) / 86400 );
-				if($val['status'] == 2 && $user_days >= 20){
-					$result[$key]['status'] = 10;  // 可续借
+				if($val['status'] == 2){
+					$user_days = intval( ($time_now - strtotime($val['borrow_time'])) / 86400 );
+					if($user_days >= 20){
+						$result[$key]['status'] = 10;  // 可续借
+					}
+					$result[$key]['use_days'] = $user_days.'天';
 				}
+
 				if($val['status'] == 4){
 					$due_date = date('Y-m-d', strtotime($val['borrow_time'])+(86400*60));
 					$result[$key]['due_date'] = $due_date;
@@ -81,7 +85,6 @@ class BookModel extends Model{
 					}
 				}
 
-				$result[$key]['use_days'] = $user_days.'天';
 			}
 		}
 		
