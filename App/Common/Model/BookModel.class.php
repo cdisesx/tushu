@@ -41,7 +41,7 @@ class BookModel extends Model{
 			}else{
 				$SMSS = new SMSService();
 				if($SMSS->checkIsPhone($key_word)){
-					$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' or (u.phone = \''.$key_word.'\' and b.status in (2,3) ) )';
+					$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' or (u.phone = \''.$key_word.'\' and b.status in (2,3,4) ) )';
 				}else{
 					$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' )';
 				}

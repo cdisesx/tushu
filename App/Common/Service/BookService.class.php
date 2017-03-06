@@ -302,7 +302,7 @@ class BookService {
 //            M()->rollback();
 //            return ['code'=>1,'msg'=>'借阅失败'];
             M()->commit();
-            return ['code'=>0,'msg'=>'续借成功，请注意还书时间，逾期将已每天1元罚金补充团队管理经费'];
+            return ['code'=>0,'msg'=>'续借成功，请注意还书时间，逾期将以每天1元罚金补充团队管理经费'];
         }else{
             M()->rollback();
             return ['code'=>1,'msg'=>'续借失败，可能是系统问题，你可以直接联系管理员'];
