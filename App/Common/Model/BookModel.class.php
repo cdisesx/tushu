@@ -1,6 +1,7 @@
 <?php
 
 namespace Common\Model;
+use Common\Service\BookService;
 use Common\Service\SMSService;
 use Think\Model;
 
@@ -68,24 +69,11 @@ class BookModel extends Model{
 		// 数据处理
 		if(count($result)){
 			$time_now = time();
+			$BS = new BookService();
 			foreach($result as $key=>$val){
-				if($val['status'] == 2){
-					$user_days = intval( ($time_now - strtotime($val['borrow_time'])) / 86400 );
-					if($user_days >= 20){
-						$result[$key]['status'] = 10;  // 可续借
-					}
-					$result[$key]['use_days'] = $user_days.'天';
-				}
 
-				if($val['status'] == 4 || $val['status'] == 3){
-					$due_date = date('Y-m-d', strtotime($val['borrow_time'])+(86400*60));
-					$user_days = intval( ($time_now - strtotime($val['borrow_time'])) / 86400 );
-					$result[$key]['due_date'] = $due_date;
-					$result[$key]['use_days'] = $user_days.'天';
-					if($due_date < date('Y-m-d')){
-						$result[$key]['fine'] = intval((time()-strtotime($val['borrow_time']))/86400-60);
-					}
-				}
+				// 计算罚金 到期日 借用日
+				$BS->getFine($result[$key]);
 
 			}
 		}

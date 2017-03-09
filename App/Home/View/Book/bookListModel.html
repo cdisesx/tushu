@@ -4,39 +4,50 @@
 			<div class="am-panel-hd">
 			  <div class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#do-not-say-{{$vo.id}}'}">
 				<img class="am-img-thumbnail am-img-bdrs am-u-sm-12" src="__PIC__/face/{{$vo.pic}}" alt=""/>
-				
+
 				<p class="margin-B">
 					<switch name="vo.status" >
 						<case value="1">
 							<span class="am-badge am-badge-success am-radius font-A">在架</span>
+							<span class="font-B">{{$vo.name}}</span>
 						</case>
 						<case value="2">
-							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}</span>
+							<span class="font-B">{{$vo.name}}</span>
+							<br>
+							<if condition=" 0 lt $vo.fine ">
+								<span class="am-badge am-badge-danger am-radius font-A">逾期罚金 {{$vo.fine}}元</span>
+							</if>
+							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}天</span>
+							<span class="am-badge am-badge-success am-radius font-A">到期日 {{$vo.due_date}}</span><br>
 						</case>
 						<case value="10">
-							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}</span>
+							<span class="font-B">{{$vo.name}}</span>
+							<br>
 							<span class="am-badge am-badge-secondary am-radius font-A">可续借</span>
+							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}天</span>
+							<span class="am-badge am-badge-success am-radius font-A">到期日 {{$vo.due_date}}</span>
+
 						</case>
 						<case value="3">
+							<span class="font-B">{{$vo.name}}</span>
+							<span class="am-badge am-badge-danger am-radius font-A">丢失</span>
+							<br>
 							<if condition=" 0 lt $vo.fine ">
 								<span class="am-badge am-badge-danger am-radius font-A">逾期罚金 {{$vo.fine}}元</span>
 							</if>
-							<span class="am-badge am-badge-danger am-radius font-A">丢失</span>
-							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}</span>
+							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}天</span>
 						</case>
 						<case value="4">
-
+							<span class="font-B">{{$vo.name}}</span>
+							<br>
 							<if condition=" 0 lt $vo.fine ">
 								<span class="am-badge am-badge-danger am-radius font-A">逾期罚金 {{$vo.fine}}元</span>
 							</if>
-							<br>
-							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}</span>
+							<span class="am-badge am-badge-warning am-radius font-A">{{$vo.user_name}}借了 {{$vo.use_days}}天</span>
 							<span class="am-badge am-badge-secondary am-radius font-A">续借到期日 {{$vo.due_date}}</span>
-							<br>
 
 						</case>
 					</switch>
-					<span class="font-B">{{$vo.name}}</span>
 				</p>
 			  </div>
 			</div>

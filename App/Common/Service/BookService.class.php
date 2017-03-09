@@ -311,4 +311,64 @@ class BookService {
 
     }
 
+
+    /**
+     * 罚金计算
+     */
+    public function getFine(&$book_info){
+        if(!is_array($book_info)){
+            return [];
+        }
+
+        $result = [];
+        $time_now = time();
+
+        // 已借用时间
+        $use_days = intval( ($time_now - strtotime($book_info['borrow_time'])) / 86400 );
+        $due_date = 0;      // 超时时间
+        $fine = 0;          // 罚款
+        $status = $book_info['status'];
+
+        // 已借 未续借
+        if($book_info['status'] == 2){
+            $due_date = date('Y-m-d', strtotime($book_info['borrow_time'])+(86400*30));
+            if($use_days >= 20 && $use_days<=30){
+                $status = 10;  // 可续借
+            }
+            elseif($use_days > 30){
+                $fine = intval((time()-strtotime($book_info['borrow_time']))/86400-30);
+            }
+
+        }
+
+        // 已经续借
+        if($book_info['status'] == 4){
+            $due_date = date('Y-m-d', strtotime($book_info['borrow_time'])+(86400*60));
+            if($due_date < date('Y-m-d')){
+                $fine = intval((time()-strtotime($book_info['borrow_time']))/86400-60);
+            }
+        }
+
+
+        // 已经丢失
+        if($book_info['status'] == 3){
+            $fine = intval(getArrayVelue($book_info, 'before_lose_fine', 0));
+            $due_date = date('Y-m-d', strtotime($book_info['borrow_time'])+(86400*60));
+            if($fine > 0){
+                $fine = $fine + intval(($time_now - strtotime($book_info['lose_time']))/86400);
+            }else{
+                $fine = intval((time()-strtotime($book_info['borrow_time']))/86400-60);
+            }
+        }
+
+        //添加数据
+        $book_info['status'] = $status;
+        $book_info['due_date'] = $due_date;
+        $book_info['fine'] = $fine;
+        $book_info['use_days'] = $use_days;
+
+        return $book_info;
+
+    }
+
 }
