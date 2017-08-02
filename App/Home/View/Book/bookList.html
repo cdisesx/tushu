@@ -32,8 +32,13 @@
 		margin-bottom:2px;
 	}
 	.font-A{
-		font:400 10px "Segoe UI";
-		line-height:12px;
+		font-weight:400;
+		font-family:"Segoe UI";
+		vertical-align:middle;
+		margin-right:5px;
+	}
+	.font-B{
+		vertical-align:middle;
 	}
 	.btn-loading-example:hover{
 		color:#0e90d2;
@@ -51,8 +56,9 @@
     <div class="am-topbar-brand">
         <strong>上海东同</strong> <small>图书管理系统</small>
     </div>
+
 	
-    <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-search"></span></button>
+    <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">搜索</span> <span class="am-icon-search"></span></button>
 	
 	<if condition="($params['id'] gt 0) OR ($params['key_word']) "> 
 	<a href='{{:U("Book/bookList")}}' class="am-topbar-btn am-btn am-fr am-btn-sm am-btn-warning " ><span class="am-icon-home"></span></a>
@@ -64,7 +70,7 @@
     <div class="am-collapse am-topbar-collapse" style="padding:3px 10px;" id="topbar-collapse">
 
         <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
-            <li>
+			<li>
 				<form action="{{:U('Book/bookList')}}" method="get" class="am-form">
 					<div class="am-form-group am-form-error am-form-icon am-form-feedback">
 						<input id="search_text" placeholder="书名 或 手机号" name="key_word" type="text" value="{{$params['key_word']}}" />
@@ -86,8 +92,15 @@
 
     <div class="admin-content-body">
 
+		<div  class="am-show-md-only">
+			<hr><strong style="color:#ff0000;">本系统暂不支持宽屏浏览器使用，请通过手机端访问或将浏览器宽度调至640像素！</strong>
+		</div>
+		<div  class="am-show-lg-only">
+			<hr><strong style="color:#ff0000;">本系统暂不支持宽屏浏览器使用，请通过手机端访问或将浏览器宽度调至640像素！</strong>
+		</div>
+
       <hr>
-      <ul class="am-avg-sm-1 am-avg-md-4 am-panel-group am-avg-lg-6 am-margin gallery-list" id="accordion">
+      <ul class="am-avg-sm-1 am-avg-md-2 am-panel-group am-avg-lg-6 am-margin gallery-list" id="accordion">
 		
       </ul>
 	  
@@ -111,7 +124,7 @@
   <div class="am-modal-dialog">
     <div class="am-modal-hd">确认借阅</div>
     <div class="am-modal-bd am-g">
-		《<font id="borrow-book-name"></font>》 <hr>
+		《<span id="borrow-book-name"></span>》 <hr>
 		<form class="checkForm" id="borrow_form">
 		<!--am-form-error-->
 		<div class="">
@@ -140,7 +153,7 @@
   <div class="am-modal-dialog">
     <div class="am-modal-hd">确认还书</div>
     <div class="am-modal-bd am-g">
-		《<font id="return-book-name"></font>》 <hr>
+		《<span id="return-book-name"></span>》 <hr>
 		<form class="checkForm" id="return_form">
 		
 		<div class="">
@@ -165,7 +178,7 @@
   <div class="am-modal-dialog">
     <div class="am-modal-hd">上报丢失</div>
     <div class="am-modal-bd am-g">
-		《<font id="lose-book-name"></font>》 <hr>
+		《<span id="lose-book-name"></span>》 <hr>
 		<form class="checkForm" id="lose_form">
 		
 		<div class="">
@@ -184,6 +197,31 @@
       <span class="am-modal-btn" data-am-modal-confirm>确定</span>
     </div>
   </div>
+</div>
+
+<div class="am-modal am-modal-confirm" tabindex="-1" id="my-renew">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">确认续借</div>
+		<div class="am-modal-bd am-g">
+			《<span id="renew-book-name"></span>》 <hr>
+			<form class="checkForm" id="renew_form">
+
+				<div class="">
+					<input name="phone" type="text" class="margin-B am-form-field" placeholder="请输入手机号码">
+				</div>
+
+				<div class=" am-u-sm-8" style="padding-left:0px;">
+					<input name="code" type="text" class="am-form-field" style="margin-top:5px;" placeholder="验证码" />
+				</div>
+
+				<a class="btn-loading-example am-u-sm-4 am-btn" style="margin-top:5px;" >获取</a>
+			</form>
+		</div>
+		<div class="am-modal-footer">
+			<span class="am-modal-btn" data-am-modal-cancel>取消</span>
+			<span class="am-modal-btn" data-am-modal-confirm>确定</span>
+		</div>
+	</div>
 </div>
 
 <div class="am-modal am-modal-confirm" tabindex="-1" id="my-loading">
@@ -325,6 +363,46 @@
 			onCancel: function() {}
 		});
 	}
+	// 续借
+	function renew_book(name,id){
+		mc.book_id = id;
+		mc.book_name = name;
+		mc.check_borrowed = 3;
+		mc.do_type = 'renew';
+		$('#renew-book-name').html(name);
+		$('#my-renew').modal({
+			relatedTarget: this,
+			closeOnConfirm:false,
+			onConfirm: function(options){
+				if(checkInput('renew')){
+					var url = '{{:U("book/renewBook")}}';
+					var push_data = $('#renew_form').serialize();
+					push_data += '&id='+id+'&cb=3';
+					$.ajax({
+						url:url,
+						data:push_data,
+						type:'post',
+						dataType:'json',
+						beforeSend:function (){
+							$('#my-renew').modal('close');
+							$('#my-loading').modal({
+								relatedTarget: this,
+								closeViaDimmer: 0
+							});
+						},
+						success:function(data){
+							loadAlert('renew',data,name,id);
+						},
+						error:function (){
+							$('#my-loading').modal('close');
+							doAlert('网络错误');
+						}
+					});
+				}
+			},
+			onCancel: function() {}
+		});
+	}
 	// 关闭Comfirm并开启alert 当alert执行难后，重新开启Comfirm
 	function loadAlert(action,data,name,id){	
 		$('#my-loading').modal('close');
@@ -334,7 +412,7 @@
 					if(data.code>0){
 						borrow_book(name,id);
 					}else{
-						window.location.href='{{:U("book/booklist")}}?id='+id;
+						window.location.href='{{:U("Book/bookList")}}?id='+id;
 					}
 				})
 				break;
@@ -343,7 +421,7 @@
 					if(data.code>0){
 						return_book(name,id);
 					}else{
-						window.location.href='{{:U("book/booklist")}}?id='+id;
+						window.location.href='{{:U("Book/bookList")}}?id='+id;
 					}
 				})
 				break;
@@ -352,7 +430,16 @@
 					if(data.code>0){
 						lose_book(name,id);
 					}else{
-						window.location.href='{{:U("book/booklist")}}?id='+id;
+						window.location.href='{{:U("Book/bookList")}}?id='+id;
+					}
+				})
+				break;
+			case 'renew':
+				doAlert(data.msg, function(){
+					if(data.code>0){
+						renew_book(name,id);
+					}else{
+						window.location.href='{{:U("Book/bookList")}}?id='+id;
 					}
 				})
 				break;
@@ -408,6 +495,19 @@
 			}
 			
 		}
+
+		if('renew'===checkForm){
+
+			var obj = $('#renew_form').find('input[name="phone"]');
+			if(!checkIsPhone(obj.val())){
+				showError(obj);return false;
+			}
+			var obj = $('#renew_form').find('input[name="code"]');
+			if(!obj.val()){
+				showError(obj);return false;
+			}
+
+		}
 		
 		return true;
 	}
@@ -461,7 +561,7 @@
 		
 	});
 	function sendCode(thisBtn){
-		btn = thisBtn;
+		btn = $('.btn-loading-example');
 		var phone = $(thisBtn).parent('.checkForm').find('input[name="phone"]').val();
 		if(!checkIsPhone(phone)){
 			showError($(thisBtn).parent('.checkForm').find('input[name="phone"]'));
@@ -483,7 +583,7 @@
 				if(data.code==0){
 					beginCount();
 				}
-				else if(data.code<=0){
+				else if(data.code>0){
 					eval("$('#my-"+mc.do_type+"').modal('close')");
 					doAlert(data.msg, function(){
 						$(btn).html('获取');

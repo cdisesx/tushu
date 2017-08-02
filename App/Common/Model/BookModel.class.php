@@ -1,6 +1,8 @@
 <?php
 
 namespace Common\Model;
+use Common\Service\BookService;
+use Common\Service\SMSService;
 use Think\Model;
 
 class BookModel extends Model{
@@ -32,7 +34,19 @@ class BookModel extends Model{
 		// 搜索
 		$key_word = trim(addslashes(getArrayVelue($params,'key_word')));
 		if($key_word){
-			$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' or u.phone = \''.$key_word.'\' )';
+			if($key_word === 'xxx已借'){
+				$where_str .= ' and b.status in ( 2, 4 ) ';
+			}
+			elseif($key_word === 'xxx丢失'){
+				$where_str .= ' and b.status = 3';
+			}else{
+				$SMSS = new SMSService();
+				if($SMSS->checkIsPhone($key_word)){
+					$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' or (u.phone = \''.$key_word.'\' and b.status in (2,3,4) ) )';
+				}else{
+					$where_str .= ' and ( b.key_word like \'%'.$key_word.'%\' )';
+				}
+			}
 		}
 
 		$field = [
@@ -47,12 +61,23 @@ class BookModel extends Model{
 			->join('left join `user` as u on u.id = b.user_id')
 			->where($where_str)
 			->page($page.','.$size)
-			//->order('b.status asc')
-			->order('b.status asc,b.id desc')
+			->order('b.status asc,b.borrow_time asc,b.id desc')
 			->select();
 
 //		echo $this->getLastSql();
 
+		// 数据处理
+		if(count($result)){
+			$time_now = time();
+			$BS = new BookService();
+			foreach($result as $key=>$val){
+
+				// 计算罚金 到期日 借用日
+				$BS->getFine($result[$key]);
+
+			}
+		}
+		
 		return $result;
 	}
 
