@@ -17,9 +17,9 @@ class SMSService{
      * aliyun config
      */
     // Access Key ID
-    private $AccessKeyID = 'LTAINK58vL5aDuvm';
+    private $AccessKeyID = 'LTAIZw44tlaZzF7Y';
     // Access Key Secret
-    private $AccessKeySecret = 'pBrmnqC9QmUW0xMoIB3zLZ7kQ8V445';
+    private $AccessKeySecret = 'YXXaqOlMuAjhtRr4anryvAEsFtchQU';
 
 
 
